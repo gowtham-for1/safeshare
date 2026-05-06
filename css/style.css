@@ -1,0 +1,175 @@
+/* =============================================
+   css/style.css — SafeShare Pro Styles
+   ============================================= */
+
+/* ── Fonts ── */
+.font-display {
+  font-family: "Syne", sans-serif;
+}
+.font-body {
+  font-family: "DM Sans", sans-serif;
+}
+
+body {
+  font-family: "DM Sans", sans-serif;
+}
+h1,
+h2,
+h3,
+nav a {
+  font-family: "Syne", sans-serif;
+}
+
+/* ── Gradient Text ── */
+.gradient-text {
+  background: linear-gradient(135deg, #22d3ee, #3b82f6, #a78bfa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Glow Orbs ── */
+.glow-orb {
+  position: fixed;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  filter: blur(120px);
+  pointer-events: none;
+  z-index: 0;
+}
+.glow-blue {
+  background: rgba(59, 130, 246, 0.08);
+  top: -200px;
+  left: -200px;
+}
+.glow-cyan {
+  background: rgba(34, 211, 238, 0.06);
+  top: 50%;
+  right: -200px;
+}
+
+/* ── Primary Button ── */
+.btn-primary {
+  background: linear-gradient(135deg, #0891b2, #3b82f6);
+  color: white;
+  font-family: "Syne", sans-serif;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+.btn-primary::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: white;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.btn-primary:hover::after {
+  opacity: 0.08;
+}
+.btn-primary:active {
+  transform: scale(0.98);
+}
+
+/* ── Feature Cards ── */
+.feature-card {
+  backdrop-filter: blur(12px);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.feature-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+/* ── Glass Card ── */
+.card-glass {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+}
+
+/* ── Info Chip ── */
+.info-chip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+}
+
+/* ── Drop Zone ── */
+.drop-zone {
+  background: rgba(255, 255, 255, 0.02);
+  transition:
+    background 0.2s,
+    border-color 0.2s;
+}
+.drop-zone.drag-over {
+  background: rgba(34, 211, 238, 0.06);
+  border-color: rgba(34, 211, 238, 0.5);
+}
+
+/* ── Form Inputs ── */
+.form-select,
+.form-input {
+  transition:
+    border-color 0.2s,
+    background 0.2s;
+}
+.form-select:focus,
+.form-input:focus {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(34, 211, 238, 0.6);
+  box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.1);
+}
+.form-select option {
+  background: #0f172a;
+}
+
+/* ── Success Bounce ── */
+@keyframes successBounce {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  70% {
+    transform: scale(1.15);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+.success-bounce {
+  animation: successBounce 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.02);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+/* ── Mobile responsive tweaks ── */
+@media (max-width: 640px) {
+  h1.font-display {
+    font-size: 2.5rem;
+  }
+  .glow-orb {
+    width: 300px;
+    height: 300px;
+  }
+}
