@@ -119,7 +119,10 @@ deleteExpiredFiles(); // Clean up on every page load
           <p class="text-white/40 text-sm">or click to browse</p>
         </div>
         <div id="filePreview" class="hidden">
-          <div class="text-4xl mb-3" id="fileIcon">📄</div>
+          <div class="text-4xl mb-3" id="fileIcon">📄</div> <!-- Generic icon for non-media files -->
+          <img id="imagePreview" class="hidden max-w-full max-h-40 mx-auto mb-3 rounded-lg object-contain" src="#" alt="Image Preview">
+          <video id="videoPreview" class="hidden max-w-full max-h-40 mx-auto mb-3 rounded-lg object-contain" controls src="#"></video>
+          <audio id="audioPreview" class="hidden w-full mx-auto mb-3" controls src="#"></audio>
           <p class="font-semibold" id="fileName">filename.pdf</p>
           <p class="text-white/40 text-sm" id="fileSize">2.3 MB</p>
         </div>

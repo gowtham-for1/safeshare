@@ -129,6 +129,64 @@ if ($file['password'] && !$passwordVerified) {
     }
 }
 
+// ── File Preview Screen ──
+$action = $_GET['action'] ?? 'preview';
+
+if ($action !== 'download') {
+    ?>
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SafeShare Pro — Preview File</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    </head>
+    <body class="bg-[#0a0e1a] text-white min-h-screen flex items-center justify-center px-6">
+    <div class="glow-orb glow-cyan"></div>
+    <div class="w-full max-w-md relative z-10 text-center">
+      <div class="mb-8 text-center">
+        <div class="text-6xl mb-4">📦</div>
+        <h1 class="font-display text-3xl font-bold mb-2">File Ready</h1>
+        <p class="text-white/40 text-sm">Review the details below before downloading.</p>
+      </div>
+      <div class="card-glass rounded-2xl p-8">
+        <div class="flex items-center gap-4 mb-8 p-4 bg-white/5 rounded-2xl text-left">
+          <div class="text-4xl">📄</div>
+          <div class="flex-1 min-w-0">
+            <p class="font-semibold truncate text-lg"><?= htmlspecialchars($file['original_name']) ?></p>
+            <p class="text-sm text-white/40"><?= formatFileSize($file['file_size']) ?></p>
+          </div>
+        </div>
+        
+        <div class="space-y-4 mb-8 text-left text-sm">
+            <div class="flex justify-between border-b border-white/5 pb-2">
+                <span class="text-white/30">Expires At</span>
+                <span class="text-white/60"><?= date('M j, Y H:i', strtotime($file['expiry_time'])) ?></span>
+            </div>
+            <?php if ($file['max_downloads']): ?>
+            <div class="flex justify-between border-b border-white/5 pb-2">
+                <span class="text-white/30">Downloads Left</span>
+                <span class="text-white/60"><?= ($file['max_downloads'] - $file['download_count']) ?></span>
+            </div>
+            <?php endif; ?>
+        </div>
+
+        <a href="download.php?token=<?= urlencode($token) ?>&action=download" 
+           class="btn-primary w-full py-4 rounded-xl font-semibold flex items-center justify-center gap-2">
+           📥 Download File
+        </a>
+      </div>
+      <a href="index.php" class="inline-block mt-8 text-white/40 hover:text-white transition text-sm">← Back to Home</a>
+    </div>
+    </body>
+    </html>
+    <?php
+    exit;
+}
+
 // ── File existence check ──
 if (!file_exists($file['file_path'])) {
     showError('File Missing', 'The file could not be found on the server.', '📂');
