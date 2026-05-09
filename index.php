@@ -103,18 +103,6 @@ deleteExpiredFiles(); // Clean up on every page load
     <h2 class="font-display text-3xl font-bold text-center mb-2">Upload Your File</h2>
     <p class="text-center text-white/40 mb-10 text-sm">Max 1GB · All file formats supported</p>
 
-    <?php
-    // System Configuration Check
-    $postMax = ini_get('post_max_size');
-    $uploadMax = ini_get('upload_max_filesize');
-    $postMaxBytes = (int)$postMax * (strpos($postMax, 'G') !== false ? 1024**3 : 1024**2);
-    
-    if ($postMaxBytes < MAX_FILE_SIZE): ?>
-    <div class="mb-6 p-4 rounded-xl bg-yellow-500/10 border border-yellow-500/30 text-yellow-400 text-xs text-center">
-      <strong>⚠️ Configuration Mismatch:</strong> Your PHP limits (Upload: <?=$uploadMax?>, Post: <?=$postMax?>) are lower than the 1GB limit. Updates in <code>php.ini</code> are required.
-    </div>
-    <?php endif; ?>
-
     <?php if (!empty($_SESSION['error'])): ?>
     <div class="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-sm">
       ⚠ <?= htmlspecialchars($_SESSION['error']) ?>
