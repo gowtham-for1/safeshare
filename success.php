@@ -57,11 +57,17 @@ $link = BASE_URL . '/download.php?token=' . urlencode($data['token']);
   </div>
 
   <script>
-    function copyLink() {
+    async function copyLink() {
       const copyText = document.getElementById("shareLink");
-      copyText.select();
-      document.execCommand("copy");
-      alert("Link copied to clipboard!");
+      try {
+        await navigator.clipboard.writeText(copyText.value);
+        alert("Link copied to clipboard!");
+      } catch (err) {
+        // Fallback for older browsers
+        copyText.select();
+        document.execCommand("copy");
+        alert("Link copied!");
+      }
     }
   </script>
 </body>
