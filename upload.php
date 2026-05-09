@@ -4,6 +4,9 @@
 // =============================================
 
 session_start();
+// Prevent timeout for large file moves
+set_time_limit(0);
+
 require_once 'functions.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -11,35 +14,47 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-// ── Validate file ──
-if (empty($_FILES['file']) || $_FILES['file']['error'] === UPLOAD_ERR_NO_FILE) {
-    $_SESSION['error'] = 'Please select a file to upload.';
-    header('Location: index.php#upload');
+$fileId      = $_POST['file_id'] ?? '';
+$chunkIndex  = (int)($_POST['chunk_index'] ?? 0);
+$totalChunks = (int)($_POST['total_chunks'] ?? 0);
+$fileName    = $_POST['file_name'] ?? 'unknown';
+
+if (empty($fileId) || empty($_FILES['file'])) {
+    http_response_code(400);
+    echo json_encode(['error' => 'Invalid request']);
     exit;
 }
 
-$file   = $_FILES['file'];
-$result = validateFile($file);
+$tempPath = UPLOAD_DIR . 'tmp_' . $fileId;
 
-if ($result !== true) {
-    $_SESSION['error'] = $result;
-    header('Location: index.php#upload');
+// Append chunk to the temporary file
+$out = fopen($tempPath, $chunkIndex === 0 ? "wb" : "ab");
+if ($out) {
+    $in = fopen($_FILES['file']['tmp_name'], "rb");
+    if ($in) {
+        while ($buff = fread($in, 4096)) {
+            fwrite($out, $buff);
+        }
+    }
+    fclose($in);
+    fclose($out);
+}
+
+// If this is not the last chunk, we stop here and wait for the next request
+if ($chunkIndex < $totalChunks - 1) {
+    echo json_encode(['status' => 'chunk_saved']);
     exit;
 }
 
-// ── Generate unique stored filename ──
-$ext         = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+// ── Final Chunk Received: Process the complete file ──
+$ext         = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
 $storedName  = generateToken(16) . '.' . $ext;
 $destination = UPLOAD_DIR . $storedName;
 
-// Ensure the upload directory exists
-if (!is_dir(UPLOAD_DIR)) {
-    mkdir(UPLOAD_DIR, 0755, true);
-}
+if (!is_dir(UPLOAD_DIR)) mkdir(UPLOAD_DIR, 0755, true);
 
-if (!move_uploaded_file($file['tmp_name'], $destination)) {
-    $_SESSION['error'] = 'Failed to save file. Check uploads/ folder permissions.';
-    header('Location: index.php#upload');
+if (!rename($tempPath, $destination)) {
+    http_response_code(500);
     exit;
 }
 
@@ -61,11 +76,11 @@ try {
             (:original_name, :stored_name, :token, :file_path, :file_size, :expiry_time, :max_downloads, :password, :created_at)
     ");
     $stmt->execute([
-        ':original_name' => $file['name'],
+        ':original_name' => $fileName,
         ':stored_name'   => $storedName,
         ':token'         => $token,
         ':file_path'     => $destination,
-        ':file_size'     => $file['size'],
+        ':file_size'     => filesize($destination),
         ':expiry_time'   => $expiryTime,
         ':max_downloads' => $maxDownloads,
         ':password'      => $password,
@@ -81,13 +96,13 @@ try {
 // ── Pass data to success page via session ──
 $_SESSION['upload_success'] = [
     'token'         => $token,
-    'original_name' => $file['name'],
-    'file_size'     => $file['size'],
+    'original_name' => $fileName,
+    'file_size'     => filesize($destination),
     'expiry_time'   => $expiryTime,
     'expiry_label'  => expiryLabel($expiry),
     'max_downloads' => $maxDownloads,
     'has_password'  => !empty($_POST['password']),
 ];
 
-header('Location: success.php');
+echo json_encode(['redirect' => 'success.php']);
 exit;
